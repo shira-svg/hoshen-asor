@@ -1,11 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="alternate icon" href="favicon.ico">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%3E%3Crect%20width=%2264%22%20height=%2264%22%20rx=%2212%22%20fill=%22%23ffffff%22/%3E%3Cg%20fill=%22none%22%20stroke=%22%238a97a6%22%20stroke-width=%221.6%22%20stroke-linecap=%22round%22%3E%3Cpath%20d=%22M5%2012%20Q32%207%2059%2013%22/%3E%3Cpath%20d=%22M4%2028%20Q32%2024%2060%2029%22/%3E%3Cpath%20d=%22M5%2043%20Q32%2040%2059%2045%22/%3E%3Cpath%20d=%22M4%2058%20Q32%2055%2060%2059%22/%3E%3Cpath%20d=%22M13%204%20Q10%2032%2014%2060%22/%3E%3Cpath%20d=%22M29%204%20Q27%2032%2030%2060%22/%3E%3Cpath%20d=%22M45%204%20Q43%2032%2046%2060%22/%3E%3Cpath%20d=%22M59%206%20Q57%2032%2060%2058%22/%3E%3C/g%3E%3Crect%20x=%2215%22%20y=%2214%22%20width=%2212%22%20height=%2211%22%20fill=%22%2317345e%22/%3E%3Crect%20x=%2231%22%20y=%2215%22%20width=%2212%22%20height=%2211%22%20fill=%22%23f0d12c%22/%3E%3Crect%20x=%2247%22%20y=%2214%22%20width=%2210%22%20height=%2211%22%20fill=%22%23a3303a%22/%3E%3Crect%20x=%2215%22%20y=%2229%22%20width=%2212%22%20height=%2211%22%20fill=%22%237a5aa6%22/%3E%3Crect%20x=%2231%22%20y=%2229%22%20width=%2212%22%20height=%2211%22%20fill=%22%2317345e%22/%3E%3Crect%20x=%2247%22%20y=%2230%22%20width=%2210%22%20height=%2211%22%20fill=%22%23f0d12c%22/%3E%3Crect%20x=%2215%22%20y=%2244%22%20width=%2212%22%20height=%2211%22%20fill=%22%23e08a2e%22/%3E%3Crect%20x=%2231%22%20y=%2244%22%20width=%2212%22%20height=%2211%22%20fill=%22%237fb347%22/%3E%3Crect%20x=%2247%22%20y=%2245%22%20width=%2210%22%20height=%2211%22%20fill=%22%233a7fc1%22/%3E%3C/svg%3E">
 <title>תמונה משפחתית לרגל שנת העשור</title>
 <style>
   :root {
@@ -150,8 +148,6 @@
 </style>
 </head>
 <body>
-<div dir="rtl" lang="he">
-
 
 <header>
   <img id="logo" alt="לוגו קהילת אבני החושן חריש">
@@ -216,7 +212,6 @@
       </div>
     </div>
 
-    <button type="button" class="add-btn" id="testFill" style="display:none;width:100%">מילוי אוטומטי לבדיקה</button>
     <div class="error" id="error"></div>
     <div class="choice">
       <h2>בחרו באפשרות שמתאימה לכם</h2>
@@ -227,7 +222,7 @@
       </label>
       <div class="panel" id="panelSelf" style="display:none">
         <button type="button" class="submit" id="copyBtn">העתיקו את הפרומפט</button>
-        <p class="note">הדביקו את הפרומפט ב-GPT, עם תמונה משפחתית שלכם</p>
+        <p class="note" style="color:var(--brand-dark);font-weight:700;font-size:1.05rem">הדביקו את הפרומפט ב-GPT, עם תמונה משפחתית שלכם</p>
         <button type="button" class="download" id="downloadBtn">או שמרו את הפרומפט בקובץ וורד לאחר כך</button>
         <div class="field" id="posterField" style="margin:10px 0 0">
           <label for="posterFile">כשהכרזה מוכנה, העלו אותה כאן <span class="hint">(חובה, ואז שולחים)</span></label>
@@ -252,6 +247,7 @@
       </div>
       </div>
     </div>
+    <div style="text-align:center;margin:0 0 20px"><button type="button" class="mini" id="clearAllBtn">מחיקת כל השדות</button></div>
   </form>
 
   <div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -536,61 +532,6 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
   }
 
-  // ===== מילוי אוטומטי לבדיקה =====
-  // לכיבוי הכפתור לפני הפצת הטופס, שנו ל-false
-  const SHOW_TEST_BUTTON = true;
-  const SAMPLES = [
-    { fam: "כהן", m: [["דנה","כהן","38"],["יובל","כהן","40"],["נועם","כהן","9"],["שיר","כהן","6"]], color: "#3a7fc1",
-      occ: "דנה מורה לחינוך מיוחד, יובל מהנדס תוכנה", hr: "שנה וחצי בחריש, הגענו מרעננה", met: "הכרנו בשבת באוניברסיטה, ליד מכונת הקפה",
-      loves: "טיולים משפחתיים ומשחקי קופסה", svc: "דנה בחינוך, יובל בחיל האוויר", insp: "אמא של דנה, שמצליחה לשמור על חיוך בכל מצב", secret: "יובל מנגן בחליל צד ומתביישים לספר", motto: "כל יום הוא הזדמנות להתחיל מחדש" },
-    { fam: "לוי", m: [["רונית","לוי","45"],["אבי","לוי","47"],["מאיה","לוי","15"]], color: "#d9558a",
-      occ: "רונית רופאת ילדים, אבי רואה חשבון", hr: "חמש שנים בחריש, מקיבוץ בגליל", met: "בטיול שנתי בכיתה י'",
-      loves: "ריקודי עם ואפייה", svc: "אבי בשריון, רונית בנחל", insp: "רות בדר גינזבורג", secret: "בילדות הסתתרתי בחדר של חני ואף אחד לא מצא אותי", motto: "מה שחשוב באמת לא נמדד" }
-  ];
-  let sampleIdx = 0;
-
-  function fakePhoto(text, color) {
-    const c = document.createElement("canvas");
-    c.width = 800; c.height = 600;
-    const g = c.getContext("2d");
-    g.fillStyle = color; g.fillRect(0, 0, 800, 600);
-    g.fillStyle = "#fff"; g.font = "bold 64px Arial"; g.textAlign = "center";
-    g.fillText("תמונת בדיקה", 400, 280);
-    g.font = "48px Arial"; g.fillText("משפחת " + text, 400, 360);
-    return c.toDataURL("image/jpeg", 0.8);
-  }
-
-  const testBtn = document.getElementById("testFill");
-  if (SHOW_TEST_BUTTON) testBtn.style.display = "block";
-  testBtn.addEventListener("click", function () {
-    const s = SAMPLES[sampleIdx % SAMPLES.length];
-    sampleIdx++;
-    form.familyName.value = s.fam;
-    membersEl.innerHTML = "";
-    s.m.forEach(function (p) {
-      addMember();
-      const r = membersEl.lastElementChild;
-      r.querySelector(".m-first").value = p[0];
-      r.querySelector(".m-last").value = p[1];
-      r.querySelector(".m-age").value = p[2];
-    });
-    form.occupation.value = s.occ;
-    form.inHarish.value = s.hr;
-    form.howMet.value = s.met;
-    form.loves.value = s.loves;
-    form.service.value = s.svc;
-    form.inspiration.value = s.insp;
-    form.secret.value = s.secret;
-    form.motto.value = s.motto;
-    photoData = fakePhoto(s.fam, s.color);
-    posterData = fakePhoto("כרזה של " + s.fam, s.color);
-    posterPreview.src = posterData;
-    posterPreview.style.display = "block";
-    previewEl.src = photoData;
-    previewEl.style.display = "block";
-    errorEl.style.display = "none";
-  });
-
   // ===== בחירת אפשרות =====
   function updateMode() {
     const self = document.getElementById("modeSelf").checked;
@@ -780,8 +721,108 @@
         showError("משהו השתבש בשליחה. נסו שוב בעוד רגע.");
       });
   });
-</script>
 
-</div>
+  // ===== שמירת טיוטה בדפדפן =====
+  // נשמרים הטקסטים בלבד (לא תמונות), ורק במכשיר הזה
+  const DRAFT_KEY = "decadeFormDraft";
+  let draftTimer = null;
+  function readDraftFromForm() {
+    const members = [];
+    membersEl.querySelectorAll(".member").forEach(function (r) {
+      members.push([r.querySelector(".m-first").value, r.querySelector(".m-last").value, r.querySelector(".m-age").value]);
+    });
+    const d = { familyName: form.familyName.value, members: members, mode: "" };
+    FIELD_KEYS.forEach(function (k) { d[k] = form[k].value; });
+    if (document.getElementById("modeSelf").checked) d.mode = "self";
+    if (document.getElementById("modeUs").checked) d.mode = "us";
+    return d;
+  }
+  function saveDraft() {
+    try {
+      const d = readDraftFromForm();
+      const empty = !d.familyName && !d.mode && FIELD_KEYS.every(function (k) { return !d[k]; }) &&
+        d.members.every(function (m) { return !m[0] && !m[1] && !m[2]; });
+      if (empty) localStorage.removeItem(DRAFT_KEY);
+      else localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+    } catch (e) {}
+  }
+  function scheduleDraft() {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(saveDraft, 400);
+  }
+  function clearDraft() {
+    clearTimeout(draftTimer);
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+  }
+  function restoreDraft() {
+    let d = null;
+    try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); } catch (e) {}
+    if (!d) return;
+    form.familyName.value = d.familyName || "";
+    FIELD_KEYS.forEach(function (k) { form[k].value = d[k] || ""; });
+    const list = d.members || [];
+    while (membersEl.querySelectorAll(".member").length < list.length) addMember();
+    membersEl.querySelectorAll(".member").forEach(function (r, i) {
+      const m = list[i] || ["", "", ""];
+      r.querySelector(".m-first").value = m[0];
+      r.querySelector(".m-last").value = m[1];
+      r.querySelector(".m-age").value = m[2];
+    });
+    if (d.mode === "self") document.getElementById("modeSelf").checked = true;
+    if (d.mode === "us") document.getElementById("modeUs").checked = true;
+    updateMode();
+    const note = document.createElement("div");
+    note.style.cssText = "display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#eef2f8;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.95rem";
+    note.innerHTML = '<span>שחזרנו את מה שמילאתם קודם. התמונות צריך להעלות מחדש.</span>';
+    const reset = document.createElement("button");
+    reset.type = "button";
+    reset.className = "mini";
+    reset.textContent = "התחילו מחדש";
+    reset.addEventListener("click", function () { clearDraft(); location.reload(); });
+    note.appendChild(reset);
+    form.insertBefore(note, form.firstChild);
+  }
+  form.addEventListener("input", scheduleDraft);
+  form.addEventListener("change", scheduleDraft);
+  membersEl.addEventListener("click", scheduleDraft);
+  document.getElementById("addMember").addEventListener("click", scheduleDraft);
+  restoreDraft();
+
+  // ===== מחיקת כל השדות =====
+  const clearAllBtn = document.getElementById("clearAllBtn");
+  let clearTimer = null;
+  clearAllBtn.addEventListener("click", function () {
+    if (clearAllBtn.dataset.armed !== "1") {
+      clearAllBtn.dataset.armed = "1";
+      clearAllBtn.textContent = "לחצו שוב כדי למחוק הכול";
+      clearTimeout(clearTimer);
+      clearTimer = setTimeout(function () {
+        clearAllBtn.dataset.armed = "";
+        clearAllBtn.textContent = "מחיקת כל השדות";
+      }, 4000);
+      return;
+    }
+    clearTimeout(clearTimer);
+    clearAllBtn.dataset.armed = "";
+    clearAllBtn.textContent = "מחיקת כל השדות";
+    form.familyName.value = "";
+    FIELD_KEYS.forEach(function (k) { form[k].value = ""; });
+    membersEl.innerHTML = "";
+    addMember();
+    addMember();
+    photoData = "";
+    posterData = "";
+    photoInput.value = "";
+    posterInput.value = "";
+    previewEl.style.display = "none";
+    posterPreview.style.display = "none";
+    document.getElementById("modeSelf").checked = false;
+    document.getElementById("modeUs").checked = false;
+    updateMode();
+    errorEl.style.display = "none";
+    clearDraft();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
 </body>
 </html>
