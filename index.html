@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>תמונה משפחתית לרגל שנת העשור</title>
-
 <style>
   :root {
     --bg: #f6f1e9;
@@ -224,9 +223,15 @@
         <span>אנחנו יכולים ליצור לבד</span>
       </label>
       <div class="panel" id="panelSelf" style="display:none">
-        <button type="button" class="submit" id="copyBtn">העתיקו את הפרומפט עכשיו</button>
+        <button type="button" class="submit" id="copyBtn">העתיקו את הפרומפט</button>
         <p class="note">הדביקו את הפרומפט ב-GPT, עם תמונה משפחתית שלכם</p>
         <button type="button" class="download" id="downloadBtn">או שמרו את הפרומפט בקובץ וורד לאחר כך</button>
+        <div class="field" id="posterField" style="margin:10px 0 0">
+          <label for="posterFile">כשהכרזה מוכנה, העלו אותה כאן <span class="hint">(חובה, ואז שולחים)</span></label>
+          <input type="file" id="posterFile" accept="image/*">
+          <img id="posterPreview" alt="תצוגה מקדימה של הכרזה" style="display:none;max-width:100%;max-height:260px;margin-top:10px;border-radius:10px;border:1.5px solid var(--line)">
+        </div>
+        <button type="button" class="submit" id="selfSubmitBtn">שליחה</button>
       </div>
       </div>
       <div class="group">
@@ -257,13 +262,6 @@
   <div class="thanks" id="thanks">
     <h2 id="thanksTitle">תודה על המענה</h2>
     <p id="thanksText">קיבלנו את הטופס שמילאתם, תודה רבה.</p>
-    <div id="thanksPrompt" style="display:none;margin:6px 0 10px;text-align:start">
-      <p class="note" style="margin:0 0 8px">עוד לא הדבקתם? אפשר להעתיק את הפרומפט שוב:</p>
-      <div style="position:relative">
-        <textarea id="thanksPromptBox" readonly style="width:100%;min-height:200px;font:inherit;font-size:.9rem;padding:10px 10px 10px 90px;border:1.5px solid var(--line);border-radius:10px;box-sizing:border-box"></textarea>
-        <button type="button" id="thanksCopyBtn" class="mini" style="position:absolute;top:8px;left:8px">העתקה</button>
-      </div>
-    </div>
     <button type="button" id="backBtn" class="mini" style="margin:0 0 10px">חזרו לעריכה</button>
     <p id="thanksSign" style="font-weight:700;margin-bottom:0">משפחת קהילת אבני החושן</p>
   </div>
@@ -401,17 +399,17 @@
     data.append("website", form.website.value);
     data.append("mode", mode);
     Object.keys(d).forEach(function (k) { data.append(k, d[k]); });
+    return rawPost(data);
+  }
+
+  function rawPost(data) {
     return fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: data });
   }
 
-  function showThanks(familyName, text, promptText) {
+  function showThanks(familyName, text) {
     document.getElementById("pageSub").style.display = "none";
     document.getElementById("thanksTitle").textContent = "משפחת " + familyName + ", תודה על המענה";
-        document.getElementById("thanksText").textContent = text;
-    if (promptText) {
-      document.getElementById("thanksPromptBox").value = promptText;
-      document.getElementById("thanksPrompt").style.display = "block";
-    }
+    document.getElementById("thanksText").textContent = text;
     document.querySelector("header").classList.add("compact");
     form.style.display = "none";
     document.getElementById("thanks").style.display = "block";
@@ -582,6 +580,9 @@
     form.secret.value = s.secret;
     form.motto.value = s.motto;
     photoData = fakePhoto(s.fam, s.color);
+    posterData = fakePhoto("כרזה של " + s.fam, s.color);
+    posterPreview.src = posterData;
+    posterPreview.style.display = "block";
     previewEl.src = photoData;
     previewEl.style.display = "block";
     errorEl.style.display = "none";
@@ -607,8 +608,8 @@
     try {
       const blob = await buildWord(d);
       downloadBlob(blob, "משפחת " + d.familyName + " - פרומפט לכרזה.docx");
-      sendToSheet(d, "הורדת וורד").catch(function () {});
-      showThanks(d.familyName, "הקובץ ירד למכשיר שלכם, והפרטים נשמרו אצלנו. כשתהיו מוכנים, פתחו אותו, העתיקו את הפרומפט והדביקו ב-GPT עם תמונה משפחתית שלכם.");
+      btn.disabled = false;
+      btn.textContent = "הקובץ ירד, אפשר לשמור שוב";
     } catch (err) {
       btn.disabled = false;
       btn.textContent = "או שמרו את הפרומפט בקובץ וורד לאחר כך";
@@ -616,10 +617,75 @@
     }
   });
 
+  // ===== העלאת כרזה מוכנה ושליחה (למי שיוצרת לבד) =====
+  function resizeToJpeg(file, maxSide) {
+    return new Promise(function (resolve, reject) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const img = new Image();
+        img.onload = function () {
+          const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+          const c = document.createElement("canvas");
+          c.width = Math.round(img.width * scale);
+          c.height = Math.round(img.height * scale);
+          const g = c.getContext("2d");
+          g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+          g.drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL("image/jpeg", 0.85));
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  let posterData = "";
+  const posterInput = document.getElementById("posterFile");
+  const posterPreview = document.getElementById("posterPreview");
+  posterInput.addEventListener("change", function () {
+    posterData = "";
+    posterPreview.style.display = "none";
+    const f = posterInput.files[0];
+    if (!f) return;
+    resizeToJpeg(f, 1800).then(function (url) {
+      posterData = url;
+      posterPreview.src = url;
+      posterPreview.style.display = "block";
+    }).catch(function () {
+      showError("לא הצלחנו לקרוא את התמונה. נסו קובץ אחר.");
+    });
+  });
+
+  document.getElementById("selfSubmitBtn").addEventListener("click", function () {
+    const d = collect();
+    if (!validate(d, false)) return;
+    if (!posterData) {
+      showError("נא להעלות את הכרזה המוכנה לפני השליחה. אם עוד לא יצרתם אותה, העתיקו את הפרומפט ופעלו לפי ההוראות.");
+      const f = document.getElementById("posterField");
+      f.classList.add("need-photo");
+      f.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(function () { f.classList.remove("need-photo"); }, 3000);
+      return;
+    }
+    const btn = this;
+    btn.disabled = true;
+    btn.textContent = "שולח...";
+    d.poster = posterData;
+    sendToSheet(d, "כרזה מוכנה")
+      .then(function () {
+        showThanks(d.familyName, "קיבלנו את הטופס ואת הכרזה שיצרתם. תודה רבה.");
+      })
+      .catch(function () {
+        btn.disabled = false;
+        btn.textContent = "שליחה";
+        showError("משהו השתבש בשליחה. נסו שוב בעוד רגע.");
+      });
+  });
+
   // ===== חזרה לעריכה =====
   document.getElementById("backBtn").addEventListener("click", function () {
     document.getElementById("thanks").style.display = "none";
-    document.getElementById("thanksPrompt").style.display = "none";
     document.getElementById("pageSub").style.display = "";
     document.querySelector("header").classList.remove("compact");
     form.style.display = "";
@@ -628,6 +694,9 @@
     const dl = document.getElementById("downloadBtn");
     dl.disabled = false;
     dl.textContent = "או שמרו את הפרומפט בקובץ וורד לאחר כך";
+    const sb = document.getElementById("selfSubmitBtn");
+    sb.disabled = false;
+    sb.textContent = "שליחה";
     errorEl.style.display = "none";
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
@@ -655,26 +724,13 @@
     }
     return oldCopy(text);
   }
-  document.getElementById("thanksCopyBtn").addEventListener("click", function () {
-    const btn = this;
-    const box = document.getElementById("thanksPromptBox");
-    const label = "העתקה";
-    copyText(box.value).then(function () {
-      btn.textContent = "הועתק";
-      setTimeout(function () { btn.textContent = label; }, 2000);
-    }).catch(function () {
-      box.focus(); box.select();
-      btn.textContent = "העתיקו ב-Ctrl+C";
-      setTimeout(function () { btn.textContent = label; }, 4000);
-    });
-  });
   document.getElementById("copyBtn").addEventListener("click", function () {
     const d = collect();
     if (!validate(d, false)) return;
     const btn = this;
     copyText(buildPrompt(d)).then(function () {
-      sendToSheet(d, "העתקת פרומפט").catch(function () {});
-      showThanks(d.familyName, "הפרומפט הועתק, והפרטים נשמרו אצלנו. עכשיו הדביקו אותו ב-GPT וצרפו את תמונת המשפחה.", buildPrompt(d));
+      btn.textContent = "הועתק";
+      setTimeout(function () { btn.textContent = "העתיקו את הפרומפט"; }, 2000);
     }).catch(function () {
       // גיבוי: מציגים את הפרומפט בתיבה, להעתקה ידנית
       let box = document.getElementById("promptBox");
