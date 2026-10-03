@@ -1,1 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><style>@media(prefers-color-scheme:dark){#t{fill:#342726}#g{color:#e66767}}</style><rect id="t" width="32" height="32" rx="7" fill="#faebeb"/><g id="g" color="#d03b3b" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" transform="translate(4 4) scale(1.2)"><path d="M7 9.5C7.501 9.5 7.942 9.103 8.2 8.5C8.458 9.103 8.899 9.5 9.4 9.5C9.901 9.5 10.342 9.103 10.6 8.5C10.858 9.103 11.299 9.5 11.8 9.5C12.301 9.5 12.742 9.103 13 8.5"/><path d="M7 13.5C7.501 13.5 7.942 13.103 8.2 12.5C8.458 13.103 8.899 13.5 9.4 13.5C9.901 13.5 10.342 13.103 10.6 12.5C10.858 13.103 11.299 13.5 11.8 13.5C12.301 13.5 12.742 13.103 13 12.5"/><path d="M12.5 3.5L14.5 3.5A1 1 0 0 1 15.5 4.5L15.5 16.5A1 1 0 0 1 14.5 17.5L5.5 17.5A1 1 0 0 1 4.5 16.5L4.5 4.5A1 1 0 0 1 5.5 3.5L7.5 3.5"/><path d="M9 2L11 2C11.828 2 12.5 2.672 12.5 3.5L12.5 4.5L7.5 4.5L7.5 3.5C7.5 2.672 8.172 2 9 2Z"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<rect width="64" height="64" rx="12" fill="#ffffff"/>
+<g fill="none" stroke="#8a97a6" stroke-width="1.6" stroke-linecap="round">
+<path d="M5 12 Q32 7 59 13"/><path d="M4 28 Q32 24 60 29"/><path d="M5 43 Q32 40 59 45"/><path d="M4 58 Q32 55 60 59"/>
+<path d="M13 4 Q10 32 14 60"/><path d="M29 4 Q27 32 30 60"/><path d="M45 4 Q43 32 46 60"/><path d="M59 6 Q57 32 60 58"/>
+</g>
+<rect x="15" y="14" width="12" height="11" fill="#17345e"/>
+<rect x="31" y="15" width="12" height="11" fill="#f0d12c"/>
+<rect x="47" y="14" width="10" height="11" fill="#a3303a"/>
+<rect x="15" y="29" width="12" height="11" fill="#7a5aa6"/>
+<rect x="31" y="29" width="12" height="11" fill="#17345e"/>
+<rect x="47" y="30" width="10" height="11" fill="#f0d12c"/>
+<rect x="15" y="44" width="12" height="11" fill="#e08a2e"/>
+<rect x="31" y="44" width="12" height="11" fill="#7fb347"/>
+<rect x="47" y="45" width="10" height="11" fill="#3a7fc1"/>
+</svg>
