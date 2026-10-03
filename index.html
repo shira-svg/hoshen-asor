@@ -172,27 +172,29 @@
       </div>
     </div>
 
+    <p class="note" style="margin:0 0 14px;font-weight:700;color:var(--brand-dark);font-size:1.05rem">בשאלות הפתוחות ענו בקצרה, משפט או שניים (עד 250 תווים בכל תשובה).</p>
+
     <div class="card">
       <h2>קצת עליכם</h2>
       <div class="field">
         <label for="occupation">במה אתם עוסקים?</label>
-        <textarea id="occupation" name="occupation"></textarea>
+        <textarea id="occupation" name="occupation" maxlength="250"></textarea>
       </div>
       <div class="field">
         <label for="inHarish">כמה זמן אתם בחריש, ומאיפה הגעתם?</label>
-        <textarea id="inHarish" name="inHarish"></textarea>
+        <textarea id="inHarish" name="inHarish" maxlength="250"></textarea>
       </div>
       <div class="field">
         <label for="howMet">איך הכרתם?</label>
-        <textarea id="howMet" name="howMet"></textarea>
+        <textarea id="howMet" name="howMet" maxlength="250"></textarea>
       </div>
       <div class="field">
         <label for="loves">מה אתם הכי אוהבים לעשות?</label>
-        <textarea id="loves" name="loves"></textarea>
+        <textarea id="loves" name="loves" maxlength="250"></textarea>
       </div>
       <div class="field">
         <label for="service">איפה שירתתם?</label>
-        <textarea id="service" name="service"></textarea>
+        <textarea id="service" name="service" maxlength="250"></textarea>
       </div>
     </div>
 
@@ -200,15 +202,15 @@
       <h2>הצד האישי</h2>
       <div class="field">
         <label for="inspiration">דמות או אישיות שהיא השראה אצלכם</label>
-        <textarea id="inspiration" name="inspiration"></textarea>
+        <textarea id="inspiration" name="inspiration" maxlength="250"></textarea>
       </div>
       <div class="field">
         <label for="secret">משהו שאנחנו לא יודעים עליכם</label>
-        <textarea id="secret" name="secret"></textarea>
+        <textarea id="secret" name="secret" maxlength="250"></textarea>
       </div>
       <div class="field">
         <label for="motto">משפט או מוטו לחיים</label>
-        <textarea id="motto" name="motto"></textarea>
+        <textarea id="motto" name="motto" maxlength="250"></textarea>
       </div>
     </div>
 
@@ -823,6 +825,27 @@
     clearDraft();
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+  // ===== מונה תווים לתשובות הפתוחות =====
+  const MAX_CHARS = 250;
+  function updateCounters() {
+    FIELD_KEYS.forEach(function (k) {
+      const el = form[k];
+      let c = document.getElementById("count-" + k);
+      if (!c) {
+        c = document.createElement("div");
+        c.id = "count-" + k;
+        c.style.cssText = "font-size:.8rem;color:var(--muted);text-align:end;margin-top:2px";
+        el.parentNode.appendChild(c);
+      }
+      const n = el.value.length;
+      c.textContent = n + " מתוך " + MAX_CHARS + " תווים";
+      c.style.color = n >= MAX_CHARS ? "var(--error)" : "var(--muted)";
+    });
+  }
+  form.addEventListener("input", updateCounters);
+  clearAllBtn.addEventListener("click", function () { setTimeout(updateCounters, 0); });
+  updateCounters();
 </script>
 </body>
 </html>
