@@ -75,7 +75,7 @@
   textarea { min-height: 84px; resize: vertical; }
   .member {
     display: grid;
-    grid-template-columns: 2fr .8fr auto;
+    grid-template-columns: 2fr .8fr 1fr auto;
     gap: 8px;
     margin-bottom: 8px;
     align-items: center;
@@ -85,6 +85,14 @@
     font-size: 1.4rem; cursor: pointer; padding: 0 6px;
   }
   .member button[hidden] { visibility: hidden; display: block; }
+  .member input, .member select { min-width: 0; width: 100%; box-sizing: border-box; }
+  .member select {
+    font: inherit; color: inherit;
+    padding: 12px 8px;
+    border: 1.5px solid #e5dccb; border-radius: 10px;
+    background: #fdfbf8; cursor: pointer;
+  }
+  .member select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(23,52,94,.18); }
   .add-btn {
     background: none;
     border: 1.5px dashed var(--brand);
@@ -141,7 +149,9 @@
   .thanks p { margin: 0 0 12px; }
   .hp { position: absolute; left: -9999px; height: 0; overflow: hidden; }
   @media (max-width: 520px) {
-    .member { grid-template-columns: 1fr 90px auto; }
+    .member { grid-template-columns: minmax(0,1fr) 58px 84px 26px; gap: 6px; }
+    .member input, .member select { padding-left: 8px; padding-right: 8px; font-size: .95rem; }
+    .member button { padding: 0; }
   }
 </style>
 </head>
@@ -282,6 +292,7 @@
     row.innerHTML =
       '<input type="text" class="m-first" placeholder="שם פרטי" aria-label="שם פרטי">' +
       '<input type="number" class="m-age age" placeholder="גיל" min="0" max="120" aria-label="גיל">' +
+      '<select class="m-unit" aria-label="יחידת גיל"><option value="">שנים</option><option value="m">חודשים</option></select>' +
       '<button type="button" aria-label="הסרה" title="הסרה">×</button>';
     row.querySelector("button").addEventListener("click", function () {
       row.remove();
@@ -307,8 +318,9 @@
     membersEl.querySelectorAll(".member").forEach(function (r) {
       const first = r.querySelector(".m-first").value.trim();
       const age = r.querySelector(".m-age").value.trim();
+      const months = r.querySelector(".m-unit").value === "m";
       if (first) {
-        list.push(first + (age ? " (גיל " + age + ")" : ""));
+        list.push(first + (age ? " (גיל " + age + (months ? " חודשים" : "") + ")" : ""));
       }
     });
     return list.join("\n");
@@ -727,7 +739,7 @@
   function readDraftFromForm() {
     const members = [];
     membersEl.querySelectorAll(".member").forEach(function (r) {
-      members.push([r.querySelector(".m-first").value, r.querySelector(".m-age").value]);
+      members.push({ n: r.querySelector(".m-first").value, a: r.querySelector(".m-age").value, u: r.querySelector(".m-unit").value });
     });
     const d = { familyName: form.familyName.value, members: members, mode: "" };
     FIELD_KEYS.forEach(function (k) { d[k] = form[k].value; });
@@ -739,7 +751,7 @@
     try {
       const d = readDraftFromForm();
       const empty = !d.familyName && !d.mode && FIELD_KEYS.every(function (k) { return !d[k]; }) &&
-        d.members.every(function (m) { return !m[0] && !m[1]; });
+        d.members.every(function (m) { return Array.isArray(m) ? !m[0] && !m[1] : !m.n && !m.a; });
       if (empty) localStorage.removeItem(DRAFT_KEY);
       else localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
     } catch (e) {}
@@ -761,9 +773,16 @@
     const list = d.members || [];
     while (membersEl.querySelectorAll(".member").length < list.length) addMember();
     membersEl.querySelectorAll(".member").forEach(function (r, i) {
-      const m = list[i] || ["", ""];
-      r.querySelector(".m-first").value = m[0] || "";
-      r.querySelector(".m-age").value = (m.length === 3 ? m[2] : m[1]) || "";
+      const m = list[i] || {};
+      if (Array.isArray(m)) {
+        // תבנית ישנה של טיוטה
+        r.querySelector(".m-first").value = m[0] || "";
+        r.querySelector(".m-age").value = (m.length === 3 ? m[2] : m[1]) || "";
+      } else {
+        r.querySelector(".m-first").value = m.n || "";
+        r.querySelector(".m-age").value = m.a || "";
+        r.querySelector(".m-unit").value = m.u || "";
+      }
     });
     if (d.mode === "self") document.getElementById("modeSelf").checked = true;
     if (d.mode === "us") document.getElementById("modeUs").checked = true;
