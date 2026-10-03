@@ -75,7 +75,7 @@
   textarea { min-height: 84px; resize: vertical; }
   .member {
     display: grid;
-    grid-template-columns: 1.2fr 1.2fr .7fr auto;
+    grid-template-columns: 2fr .8fr auto;
     gap: 8px;
     margin-bottom: 8px;
     align-items: center;
@@ -141,9 +141,7 @@
   .thanks p { margin: 0 0 12px; }
   .hp { position: absolute; left: -9999px; height: 0; overflow: hidden; }
   @media (max-width: 520px) {
-    .member { grid-template-columns: 1fr 1fr; }
-    .member .age { grid-column: 1 / 2; }
-    .member button { justify-self: start; }
+    .member { grid-template-columns: 1fr 90px auto; }
   }
 </style>
 </head>
@@ -283,7 +281,6 @@
     row.className = "member";
     row.innerHTML =
       '<input type="text" class="m-first" placeholder="שם פרטי" aria-label="שם פרטי">' +
-      '<input type="text" class="m-last" placeholder="שם משפחה" aria-label="שם משפחה">' +
       '<input type="number" class="m-age age" placeholder="גיל" min="0" max="120" aria-label="גיל">' +
       '<button type="button" aria-label="הסרה" title="הסרה">×</button>';
     row.querySelector("button").addEventListener("click", function () {
@@ -309,10 +306,9 @@
     const list = [];
     membersEl.querySelectorAll(".member").forEach(function (r) {
       const first = r.querySelector(".m-first").value.trim();
-      const last = r.querySelector(".m-last").value.trim();
       const age = r.querySelector(".m-age").value.trim();
-      if (first || last) {
-        list.push((first + " " + last).trim() + (age ? " (גיל " + age + ")" : ""));
+      if (first) {
+        list.push(first + (age ? " (גיל " + age + ")" : ""));
       }
     });
     return list.join("\n");
@@ -731,7 +727,7 @@
   function readDraftFromForm() {
     const members = [];
     membersEl.querySelectorAll(".member").forEach(function (r) {
-      members.push([r.querySelector(".m-first").value, r.querySelector(".m-last").value, r.querySelector(".m-age").value]);
+      members.push([r.querySelector(".m-first").value, r.querySelector(".m-age").value]);
     });
     const d = { familyName: form.familyName.value, members: members, mode: "" };
     FIELD_KEYS.forEach(function (k) { d[k] = form[k].value; });
@@ -743,7 +739,7 @@
     try {
       const d = readDraftFromForm();
       const empty = !d.familyName && !d.mode && FIELD_KEYS.every(function (k) { return !d[k]; }) &&
-        d.members.every(function (m) { return !m[0] && !m[1] && !m[2]; });
+        d.members.every(function (m) { return !m[0] && !m[1]; });
       if (empty) localStorage.removeItem(DRAFT_KEY);
       else localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
     } catch (e) {}
@@ -765,10 +761,9 @@
     const list = d.members || [];
     while (membersEl.querySelectorAll(".member").length < list.length) addMember();
     membersEl.querySelectorAll(".member").forEach(function (r, i) {
-      const m = list[i] || ["", "", ""];
-      r.querySelector(".m-first").value = m[0];
-      r.querySelector(".m-last").value = m[1];
-      r.querySelector(".m-age").value = m[2];
+      const m = list[i] || ["", ""];
+      r.querySelector(".m-first").value = m[0] || "";
+      r.querySelector(".m-age").value = (m.length === 3 ? m[2] : m[1]) || "";
     });
     if (d.mode === "self") document.getElementById("modeSelf").checked = true;
     if (d.mode === "us") document.getElementById("modeUs").checked = true;
