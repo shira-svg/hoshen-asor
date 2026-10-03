@@ -375,7 +375,7 @@
 
   function collect() {
     const d = {
-      familyName: form.familyName.value.trim(),
+      familyName: form.familyName.value.replace(/^\s*(משפחת|משפחה)\s+/, "").trim(),
       members: collectMembers(),
       photo: photoData
     };
